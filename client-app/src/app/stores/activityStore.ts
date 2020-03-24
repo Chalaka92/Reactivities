@@ -1,4 +1,11 @@
-import { observable, action, computed, runInAction, reaction } from "mobx";
+import {
+  observable,
+  action,
+  computed,
+  runInAction,
+  reaction,
+  toJS
+} from "mobx";
 import { SyntheticEvent } from "react";
 import { IActivity } from "../models/activity";
 import agent from "../api/agent";
@@ -8,7 +15,7 @@ import { RootStore } from "./rootStore";
 import { setActivityProps, createAttendee } from "../common/util/util";
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@aspnet/signalr";
 
-const LIMIT=2;
+const LIMIT = 2;
 
 export default class ActivityStore {
   rootStore: RootStore;
@@ -22,7 +29,7 @@ export default class ActivityStore {
         this.activityRegistry.clear();
         this.loadActivities();
       }
-    )
+    );
   }
 
   @observable activityRegistry = new Map();
@@ -38,22 +45,22 @@ export default class ActivityStore {
 
   @action setPredicate = (predicate: string, value: string | Date) => {
     this.predicate.clear();
-    if (predicate !== 'all') {
+    if (predicate !== "all") {
       this.predicate.set(predicate, value);
     }
-  }
+  };
 
   @computed get axiosParams() {
     const params = new URLSearchParams();
-    params.append('limit', String(LIMIT));
-    params.append('offset', `${this.page ? this.page * LIMIT : 0}`);
+    params.append("limit", String(LIMIT));
+    params.append("offset", `${this.page ? this.page * LIMIT : 0}`);
     this.predicate.forEach((value, key) => {
-      if (key === 'startDate') {
-        params.append(key, value.toISOString())
+      if (key === "startDate") {
+        params.append(key, value.toISOString());
       } else {
-        params.append(key, value)
+        params.append(key, value);
       }
-    })
+    });
     return params;
   }
 
@@ -63,11 +70,11 @@ export default class ActivityStore {
 
   @action setPage = (page: number) => {
     this.page = page;
-  }
+  };
 
   @action createHubConnection = () => {
     this.hubConnection = new HubConnectionBuilder()
-      .withUrl('http://localhost:5000/chat', {
+      .withUrl(process.env.REACT_APP_API_CHAT_URL!, {
         accessTokenFactory: () => this.rootStore.commonStore.token!
       })
       .configureLogging(LogLevel.Information)
@@ -76,27 +83,27 @@ export default class ActivityStore {
     this.hubConnection
       .start()
       .then(() => console.log(this.hubConnection!.state))
-      .catch(error => console.log('Error establishing connection: ', error));
+      .catch(error => console.log("Error establishing connection: ", error));
 
-    this.hubConnection.on('ReceiveComment', comment => {
+    this.hubConnection.on("ReceiveComment", comment => {
       runInAction(() => {
-        this.activity!.comments.push(comment)
-      })
-    })
+        this.activity!.comments.push(comment);
+      });
+    });
   };
 
   @action stopHubConnection = () => {
-    this.hubConnection!.stop()
-  }
+    this.hubConnection!.stop();
+  };
 
   @action addComment = async (values: any) => {
     values.activityId = this.activity!.id;
     try {
-      await this.hubConnection!.invoke('SendComment', values)
+      await this.hubConnection!.invoke("SendComment", values);
     } catch (error) {
       console.log(error);
     }
-  } 
+  };
 
   @computed get activitiesByDate() {
     return this.groupActivitiesByDate(
@@ -123,14 +130,14 @@ export default class ActivityStore {
     this.loadingInitial = true;
     try {
       const activitiesEnvelope = await agent.Activities.list(this.axiosParams);
-      const{activities,activityCount}=activitiesEnvelope;
+      const { activities, activityCount } = activitiesEnvelope;
       runInAction("loading activities", () => {
         activities.forEach(activity => {
           activity.date = new Date(activity.date);
           setActivityProps(activity, this.rootStore.userStore.user!);
           this.activityRegistry.set(activity.id, activity);
         });
-        this.activityCount=activityCount;
+        this.activityCount = activityCount;
         this.loadingInitial = false;
       });
     } catch (error) {
@@ -145,7 +152,7 @@ export default class ActivityStore {
     let activity = this.getActivity(id);
     if (activity) {
       this.activity = activity;
-      return activity;
+      return toJS(activity);
     } else {
       this.loadingInitial = true;
 
@@ -183,7 +190,7 @@ export default class ActivityStore {
       let attendees = [];
       attendees.push(attendee);
       activity.attendees = attendees;
-      activity.comments=[];
+      activity.comments = [];
       activity.isHost = true;
       runInAction("creating activity", () => {
         this.activityRegistry.set(activity.id, activity);
