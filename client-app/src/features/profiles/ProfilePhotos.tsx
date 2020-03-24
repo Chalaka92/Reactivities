@@ -63,7 +63,7 @@ const ProfilePhotos = () => {
                           loading={loading && target === photo.id}
                           basic
                           positive
-                          content='Main'
+                          icon='check'
                         />
                         <Button
                           name={photo.id}

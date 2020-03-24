@@ -62,12 +62,14 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
       </Segment>
       <Segment clearing>
         <span>{activity.description}</span>
+        <br/>
         <Button
           as={Link}
           to={`/activities/${activity.id}`}
           floated="right"
           content="View"
           color="blue"
+          style={{marginTop:5}}
         />
       </Segment>
     </Segment.Group>
