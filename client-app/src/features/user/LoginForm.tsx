@@ -32,7 +32,7 @@ const LoginForm = () => {
         pristine,
         dirtySinceLastSubmit
       }) => (
-        <Form onSubmit={handleSubmit} error>
+        <Form onSubmit={handleSubmit}>
           <Header
             as="h2"
             content="Login to Reactivities"

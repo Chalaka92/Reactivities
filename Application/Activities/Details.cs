@@ -36,7 +36,10 @@ namespace Application.Activities
                 if (activity == null)
                     throw new RestException(HttpStatusCode.NotFound, new { activity = "Not found" });
 
+
                 var activityToReturn = _mapper.Map<Activity, ActivityDto>(activity);
+
+                // activityToReturn.CategoryImage=  _context.Categories.FindAsync(Guid.Parse(activity.Category)).Result.ImageUrl;
 
                 return activityToReturn;
             }

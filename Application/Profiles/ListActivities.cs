@@ -61,7 +61,7 @@ namespace Application.Profiles
                     {
                         Id = activity.Activity.Id,
                         Title = activity.Activity.Title,
-                        Category = activity.Activity.Category,
+                        Category = activity.Activity.Category.ImageUrl,
                         Date = activity.Activity.Date
                     };
 

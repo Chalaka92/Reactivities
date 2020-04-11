@@ -17,7 +17,7 @@ namespace Application.Activities
             public Guid Id { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
-            public string Category { get; set; }
+            public Category Category { get; set; }
             public DateTime Date { get; set; }
             public string City { get; set; }
             public string Venue { get; set; }
@@ -73,7 +73,7 @@ namespace Application.Activities
                 };
 
                 _context.UserActivities.Add(attendee);
-
+                _context.Entry(activity.Category).State = EntityState.Unchanged;
                 var success = await _context.SaveChangesAsync() > 0;
 
                 if (success) return Unit.Value;

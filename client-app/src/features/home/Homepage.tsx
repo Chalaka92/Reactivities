@@ -37,14 +37,14 @@ const Homepage = () => {
           <Fragment>
             <Header as="h2" inverted content="Welcome to Reactivities" />
             <Button
-              onClick={() => openModal(<LoginForm />)}
+              onClick={() => openModal(<LoginForm />,'mini')}
               size="huge"
               inverted
             >
               Login
             </Button>
             <Button
-              onClick={() => openModal(<RegisterForm />)}
+              onClick={() => openModal(<RegisterForm />,'mini')}
               size="huge"
               inverted
             >

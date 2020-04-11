@@ -9,15 +9,15 @@ import TextInput from "../../../app/common/form/TextInput";
 import TextAreaInput from "../../../app/common/form/TextAreaInput";
 import SelectInput from "../../../app/common/form/SelectInput";
 import DateInput from "../../../app/common/form/DateInput";
-import { category } from "../../../app/common/options/categoryOptions";
 import { combineDateAndTime } from "../../../app/common/util/util";
 import {
   combineValidators,
   isRequired,
   composeValidators,
-  hasLengthGreaterThan
+  hasLengthGreaterThan,
 } from "revalidate";
 import { RootStoreContext } from "../../../app/stores/rootStore";
+import CategoryForm from "../../categories/form/CategoryForm";
 
 const validate = combineValidators({
   title: isRequired({ message: "The event title is required" }),
@@ -25,13 +25,13 @@ const validate = combineValidators({
   description: composeValidators(
     isRequired("Description"),
     hasLengthGreaterThan(4)({
-      message: "Description needs to be at least 5 characters"
+      message: "Description needs to be at least 5 characters",
     })
   )(),
   city: isRequired("City"),
   venue: isRequired("Venue"),
   date: isRequired("Date"),
-  time: isRequired("Time")
+  time: isRequired("Time"),
 });
 
 interface DetailParams {
@@ -40,16 +40,17 @@ interface DetailParams {
 
 const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
-  history
+  history,
 }) => {
   const rootStore = useContext(RootStoreContext);
   const {
     createActivity,
     editActivity,
     submitting,
-    loadActivity
+    loadActivity,
   } = rootStore.activityStore;
-
+  const { categoryOptions, loadCategories } = rootStore.categoryStore;
+  const { openModalGeneral } = rootStore.modalStore;
   const [activity, setActivity] = useState(new ActivityFormValues());
   const [loading, setLoading] = useState(false);
 
@@ -57,21 +58,23 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
     if (match.params.id) {
       setLoading(true);
       loadActivity(match.params.id)
-        .then(activity => {
+        .then((activity) => {
           setActivity(new ActivityFormValues(activity));
         })
         .finally(() => setLoading(false));
     }
-  }, [loadActivity, match.params.id]);
+    loadCategories();
+  }, [loadActivity, match.params.id, loadCategories]);
 
   const handleFinalFormSubmit = (values: any) => {
     const dateAndTime = combineDateAndTime(values.date, values.time);
     const { date, time, ...activity } = values;
     activity.date = dateAndTime;
+    // activity.category={id:values.category};
     if (!activity.id) {
       let newActivity = {
         ...activity,
-        id: uuid()
+        id: uuid(),
       };
       createActivity(newActivity);
     } else {
@@ -102,13 +105,29 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   value={activity.description}
                   component={TextAreaInput}
                 />
-                <Field
-                  component={SelectInput}
-                  options={category}
-                  name="category"
-                  placeholder="Category"
-                  value={activity.category}
-                />
+                <Form.Group widths="equal">
+                  <Field
+                    component={SelectInput}
+                    name="category"
+                    placeholder="Category"
+                    options={categoryOptions}
+                  />
+                  <Button
+                    icon="add"
+                    type="button"
+                    float="left"
+                    compact
+                    onClick={() =>
+                      openModalGeneral(
+                        "Add Category",
+                        <CategoryForm/>,
+                        null,
+                        "small",
+                        "categoryForm"
+                      )
+                    }
+                  />
+                </Form.Group>
                 <Form.Group widths="equal">
                   <Field
                     component={DateInput}

@@ -17,6 +17,7 @@ import { ToastContainer } from "react-toastify";
 import { RootStoreContext } from "../stores/rootStore";
 import LoadingComponent from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
+import ModalContainerGeneral from "../common/modals/ModelContainerGeneral";
 import ProfilePage from "../../features/profiles/ProfilePage";
 import PrivateRoute from "./PrivateRoute";
 
@@ -37,7 +38,8 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <Fragment>
-      <ModalContainer />
+      <ModalContainer/>
+      <ModalContainerGeneral/>
       <ToastContainer position="bottom-right" />
       <Route exact path="/" component={Homepage} />
       <Route

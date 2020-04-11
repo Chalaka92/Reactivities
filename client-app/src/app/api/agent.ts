@@ -4,6 +4,7 @@ import { history } from "../..";
 import { toast } from "react-toastify";
 import { IUser, IUserFormValues } from "../models/user";
 import { IProfile, IPhoto } from "../models/profile";
+import { ICategory, ICategoryFormValues } from "../models/category";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
@@ -55,9 +56,10 @@ const requests = {
   post: (url: string, body: {}) => axios.post(url, body).then(responseBody),
   put: (url: string, body: {}) => axios.put(url, body).then(responseBody),
   del: (url: string) => axios.delete(url).then(responseBody),
-  postForm: (url: string, file: Blob) => {
+  postForm: (url: string, file: Blob,model:any) => {
     let formData = new FormData();
     formData.append("File", file);
+    formData.append("Model", JSON.stringify(model));
     return axios
       .post(url, formData, {
         headers: { "Content-type": "multipart/form-data" }
@@ -90,7 +92,7 @@ const Profiles = {
   get: (username: string): Promise<IProfile> =>
     requests.get(`/profiles/${username}`),
   uploadPhoto: (photo: Blob): Promise<IPhoto> =>
-    requests.postForm(`/photos`, photo),
+    requests.postForm(`/photos`, photo,null),
   setMainPhoto: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
   deletePhoto: (id: string) => requests.del(`/photos/${id}`),
   updateProfile: (profile: Partial<IProfile>) =>
@@ -104,8 +106,14 @@ const Profiles = {
     requests.get(`/profiles/${username}/activities?predicate=${predicate}`)
 };
 
+const Categories={
+  list: (): Promise<ICategory[]> => requests.get("/categories"),
+  create: (category: ICategoryFormValues) => requests.postForm("/categories", category.file,category.model),
+}
+
 export default {
   Activities,
   User,
-  Profiles
+  Profiles,
+  Categories
 };
