@@ -49,7 +49,7 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
     submitting,
     loadActivity,
   } = rootStore.activityStore;
-  const { categoryOptions, loadCategories } = rootStore.categoryStore;
+  const { categoryOptions, loadCategories,categories } = rootStore.categoryStore;
   const { openModalGeneral } = rootStore.modalStore;
   const [activity, setActivity] = useState(new ActivityFormValues());
   const [loading, setLoading] = useState(false);
@@ -68,9 +68,10 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
 
   const handleFinalFormSubmit = (values: any) => {
     const dateAndTime = combineDateAndTime(values.date, values.time);
-    const { date, time, ...activity } = values;
+    const {date,time, ...activity } = values;
     activity.date = dateAndTime;
-    // activity.category={id:values.category};
+    let newCategory =categories.filter(x=>x.id===values.category.id)[0];
+    activity.category=newCategory;
     if (!activity.id) {
       let newActivity = {
         ...activity,
@@ -108,7 +109,7 @@ const ActivityForm: React.FC<RouteComponentProps<DetailParams>> = ({
                 <Form.Group widths="equal">
                   <Field
                     component={SelectInput}
-                    name="category"
+                    name="category.id"
                     placeholder="Category"
                     options={categoryOptions}
                   />

@@ -7,6 +7,7 @@ import TextInput from "../../../app/common/form/TextInput";
 import { CategoryFormValues } from "../../../app/models/category";
 import PhotoWidgetDropzone from "../../../app/common/photoUpload/PhotoWidgetDropzone";
 import { RootStoreContext } from "../../../app/stores/rootStore";
+import { observer } from "mobx-react-lite";
 
 const validate = combineValidators({
   name: isRequired("name"),
@@ -26,7 +27,7 @@ const emptyImageStyles = {
 
 const CategoryForm = () => {
   const rootStore = useContext(RootStoreContext);
-  const { addCategory } = rootStore.categoryStore;
+  const { addCategory} = rootStore.categoryStore;
 
   const [files, setFiles] = useState<any[]>([]);
   const [category] = useState(new CategoryFormValues());
@@ -44,38 +45,36 @@ const CategoryForm = () => {
     <FinalForm
       onSubmit={onSubmit}
       validate={validate}
-      render={({ handleSubmit }) => {
-        return (
-          <Form id="categoryForm" onSubmit={handleSubmit}>
-            <Field
-              name="name"
-              component={TextInput}
-              placeholder="Category Name"
-            />
-            <Grid>
-              <Grid.Column width={6}>
-                <PhotoWidgetDropzone setFiles={setFiles} />
-              </Grid.Column>
-              <Grid.Column width={10}>
-                {files.length > 0 ? (
-                  <Image
-                    style={dropzoneImageStyles}
-                    src={files[0].preview}
-                    fluid
-                    name="file"
-                  />
-                ) : (
-                  <div style={{ ...dropzoneImageStyles, ...emptyImageStyles }}>
-                    <Icon name="image" size="huge" />
-                    <Header content="Preview Area" />
-                  </div>
-                )}
-              </Grid.Column>
-            </Grid>
-          </Form>
-        );
-      }}
+      render={({ handleSubmit}) => (
+        <Form id="categoryForm" onSubmit={handleSubmit}>
+          <Field
+            name="name"
+            component={TextInput}
+            placeholder="Category Name"
+          />
+          <Grid>
+            <Grid.Column width={6}>
+              <PhotoWidgetDropzone setFiles={setFiles} />
+            </Grid.Column>
+            <Grid.Column width={10}>
+              {files.length > 0 ? (
+                <Image
+                  style={dropzoneImageStyles}
+                  src={files[0].preview}
+                  fluid
+                  name="file"
+                />
+              ) : (
+                <div style={{ ...dropzoneImageStyles, ...emptyImageStyles }}>
+                  <Icon name="image" size="huge" />
+                  <Header content="Preview Area" />
+                </div>
+              )}
+            </Grid.Column>
+          </Grid>
+        </Form>
+      )}
     />
   );
 };
-export default CategoryForm;
+export default observer(CategoryForm);

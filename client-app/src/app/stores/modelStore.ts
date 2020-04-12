@@ -8,6 +8,8 @@ export default class ModalStore {
   }
 
   @observable size: any;
+  @observable errorMessage: any;
+  @observable submitting: boolean=false;
 
   @observable.shallow modal = {
     open: false,
@@ -56,5 +58,6 @@ export default class ModalStore {
     this.modalGeneral.body = null;
     this.modalGeneral.footer = null;
     this.modalGeneral.formName = null;
+    this.errorMessage=null;
   };
 }

@@ -210,8 +210,6 @@ export default class ActivityStore {
     this.submitting = true;
     try {
       await agent.Activities.update(activity);
-      // const updatedActivity= await agent.Activities.details(activity.id);
-      // activity.categoryImage=updatedActivity.categoryImage;
       runInAction("editing activity", () => {
         this.activityRegistry.set(activity.id, activity);
         this.activity = activity;

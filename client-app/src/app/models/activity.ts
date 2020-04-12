@@ -9,7 +9,7 @@ export interface IActivity {
   id: string;
   title: string;
   description: string;
-  category: ICategory;
+  category: any;
   date: Date;
   city: string;
   venue: string;

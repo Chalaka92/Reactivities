@@ -1,7 +1,7 @@
 import ActivityStore from "./activityStore";
 import UserStore from "./userStore";
 import { createContext } from "react";
-import { configure } from "mobx";
+import { configure} from "mobx";
 import CommonStore from "./commonStore";
 import ModalStore from "./modelStore";
 import ProfileStore from "./profileStore";

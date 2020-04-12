@@ -1,11 +1,15 @@
 using System;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Persistence;
 
@@ -44,6 +48,10 @@ namespace Application.Categories
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var entity = JsonConvert.DeserializeObject<FormModel>(request.Model);
+
+                if (await _context.Categories.Where(x => x.Name == entity.Name).AnyAsync())
+                    throw new RestException(HttpStatusCode.BadRequest, new { CategoryName = "This category already exists" });
+
                 var catPhotoUploadResult = _photoAccessor.AddCategoryPhoto(request.File);
 
                 var category = new Category

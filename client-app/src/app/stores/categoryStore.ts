@@ -31,8 +31,8 @@ export default class CategoryStore {
         const option = {
           key: key,
           text: value.name,
-          value: value,
-          image:{ style:dropdownImageStyles, src: value.imageUrl},
+          value: value.id,
+          image: { style: dropdownImageStyles, src: value.imageUrl },
         };
         categoryOptions.push(option);
       });
@@ -47,20 +47,25 @@ export default class CategoryStore {
   };
 
   @action addCategory = async (category: ICategoryFormValues) => {
-    this.addingCategory = true;
+    this.rootStore.modalStore.submitting = true;
     try {
-      await agent.Categories.create(category);
-      toast.success("Category added successfully.");
-      runInAction(() => {
-        this.loadCategories();
-        this.addingCategory = false;
-        this.rootStore.modalStore.closeModalGeneral();
-      });
+      this.rootStore.modalStore.errorMessage = null;
+      if (category.file) {
+        await agent.Categories.create(category);
+        toast.success("Category added successfully.");
+        runInAction(() => {
+          this.loadCategories();
+          this.rootStore.modalStore.submitting = false;
+          this.rootStore.modalStore.closeModalGeneral();
+        });
+      } else {
+        toast.warn("⚠️ Upload a category image");
+        this.rootStore.modalStore.submitting = false;
+      }
     } catch (error) {
-      console.log(error);
-      toast.error("Problem adding category");
       runInAction(() => {
-        this.addingCategory = false;
+        this.rootStore.modalStore.errorMessage = error.data.errors.CategoryName;
+        this.rootStore.modalStore.submitting = false;
       });
     }
   };
