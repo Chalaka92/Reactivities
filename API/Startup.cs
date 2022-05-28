@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-using API.Middleware;
+﻿using API.Middleware;
 using API.SignalR;
 using Application.Activities;
 using Application.Interfaces;
@@ -24,6 +21,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace API
 {
@@ -92,7 +92,7 @@ namespace API
                 opt.Filters.Add(new AuthorizeFilter(policy));
             })
             .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>())
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             var builder = services.AddIdentityCore<AppUser>();
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
@@ -179,12 +179,13 @@ namespace API
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
             app.UseSignalR(routes => { routes.MapHub<ChatHub>("/chat"); });
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Fallback", action = "Index" }
-                );
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }

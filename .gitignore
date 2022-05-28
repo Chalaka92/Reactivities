@@ -6,3 +6,4 @@ appsettings.json
 *.db
 wwwroot
 publish
+.vs
