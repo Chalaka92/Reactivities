@@ -20,7 +20,7 @@ const Homepage = () => {
             alt="logo"
             style={{ marginBottom: 12 }}
           />
-          Reactivities
+          !Reactivities!
         </Header>
         {isLoggedIn && user && token ? (
           <Fragment>
